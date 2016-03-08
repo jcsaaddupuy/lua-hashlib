@@ -47,7 +47,7 @@ HASHLIB_GC(md5, md5_t, MD5_MT)
 static int luahashtray_update_##N(lua_State* L) {\
     T * self = luaL_checkudata(L, 1, MT);\
     size_t len;\
-    const unsigned char * data = luaL_checklstring(L, 2, &len);\
+    const unsigned char * data = (const unsigned char *)luaL_checklstring(L, 2, &len);\
     int ret = M(self->ctx, data, len);\
     self->dirty = true;\
     lua_pushinteger(L, ret);\
@@ -114,7 +114,7 @@ static int luahashtray_##N(lua_State* L) {\
     int n = lua_gettop(L);\
     if(n > 1){\
         size_t len;\
-        const unsigned char * data = luaL_checklstring(L, 1, &len);\
+        const unsigned char * data = (const unsigned char *)luaL_checklstring(L, 1, &len);\
         int ret = M(self->ctx, data, len);\
     }\
     self->dirty = true;\
