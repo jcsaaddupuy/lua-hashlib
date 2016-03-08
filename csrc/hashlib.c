@@ -68,7 +68,7 @@ static int luahashtray_hexdigest_##N(lua_State* L) {\
     }\
     luaL_Buffer buffer;\
     luaL_buffinitsize(L, &buffer, S*2);\
-    char c[2];\
+    char c[3];\
     int i=0;\
     for (i=0; i < S; i++) {\
         sprintf(c, "%02x", self->md[i]); \
