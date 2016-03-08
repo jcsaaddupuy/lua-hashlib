@@ -9,31 +9,41 @@ hmethods = [
 ]
 
 sentences = [
-    "",
-    "The quick brown fox jumps over the lazy dog",
-    "The quick brown fox jumps over the lazy cog",
-    "\0" * 80,
+    ("empty string", ""),
+    ("sentence 1", "The quick brown fox jumps over the lazy dog"),
+    ("sentence 2", "The quick brown fox jumps over the lazy cog"),
+    ("null bytes", "\0" * 80),
 ]
 
 TPL="""
 local hashlib = require("hashlib")
 
-{% for method, input, expected in methods %}
+{% for method, data  in methods.iteritems() %}
 describe("{{method}}", function()
-    it("", function()
+    {% for label, input, expected in data %}
+    it("{{label}}", function()
         local digest= hashlib.{{method}}("{{input}}")
         assert.equals("{{expected}}", digest:hexdigest())
     end)
+
+    it("{{label}} - update", function()
+        local digest= hashlib.{{method}}()
+        digest:update("{{input}}")
+        assert.equals("{{expected}}", digest:hexdigest())
+    end)
+    {%endfor%}
 end)
 {%endfor%}
 """
 
-CTX=[]
+CTX={}
 for hm in hmethods:
     m = getattr(hashlib, hm)
-    for _in in sentences:
-        expected = m(_in.encode("utf-8")).hexdigest()
-        CTX.append( (hm, _in, expected) )
+    if not getattr(CTX, hm, None):
+        CTX[hm] = []
+    for label, datain in sentences:
+        expected = m(datain.encode("utf-8")).hexdigest()
+        CTX[hm].append( (label, datain, expected) )
 
 tpl = Template(TPL)
 print(tpl.render(methods = CTX))
