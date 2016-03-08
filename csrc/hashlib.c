@@ -28,7 +28,7 @@ HASHLIB_T(md5_t, MD5_CTX);
 
 #define HASHLIB_GC(N,T, MT) \
 static int luahashtray_gc_##N(lua_State* L) {\
-    T * self = luaL_checkudata(L, 1, #MT);\
+    T * self = luaL_checkudata(L, 1, MT);\
     if (self->init) {\
         free(self->ctx);\
         self->ctx = NULL;\
